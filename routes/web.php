@@ -4,10 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
 
+<<<<<<< HEAD
 Route::get('/', function () {
     return view('home');
 });
 
+=======
+Route::get('/', [PostController::class, 'index']);
+>>>>>>> 26e4a0607da03f91d78c82d181ec7e630c083c86
 Route::resource('posts', PostController::class);
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('showRegister');
