@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // To get the authenticated user
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::all();
-        return view('posts.index', ['posts' => $posts]);
+        $posts = Post::where('user_id', Auth::id())->get();
+
+        if (Auth::check()) {
+            return view('posts.index', ['posts' => $posts]);
+        }
+
+        return redirect('/')->with('error', 'Unauthorized access.');
     }
 
     public function create()
@@ -25,6 +31,10 @@ class PostController extends Controller
             'body' => 'required',
         ]);
 
+        // Add the authenticated user's ID to the post data
+        $validated['user_id'] = Auth::id();
+
+        // Create the post with the user_id
         Post::create($validated);
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully.');
@@ -47,6 +57,10 @@ class PostController extends Controller
             'body' => 'required',
         ]);
 
+        // Make sure the user can't change the user_id
+        $validated['user_id'] = Auth::id();
+
+        // Update the post with the validated data
         $post->update($validated);
 
         return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
@@ -54,7 +68,12 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        $post->delete();
-        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+        // Ensure the post belongs to the authenticated user before deleting
+        if ($post->user_id === Auth::id()) {
+            $post->delete();
+            return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+        } else {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to delete this post.');
+        }
     }
 }

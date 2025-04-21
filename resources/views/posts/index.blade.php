@@ -5,10 +5,20 @@
 @section('content')
     <section class="home-blog bg-sand">
         <div class="container">
+            <div class="row">
+                <div class="col text-end mt-4">
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
             <div class="row justify-content-md-center">
                 <div class="col-xl-5 col-lg-6 col-md-8">
                     <div class="section-title text-center title-ex1">
-                        <h2>Jipos | Blog APP</h2>
+                        <h2>Welcome! {{ Auth::user()->name }}</h2>
                         <p>A simple blog app using the Laravel framework performing basic CRUD functionality</p>
                     </div>
                 </div>
